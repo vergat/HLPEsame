@@ -1,0 +1,8 @@
+*.sln
+build/
+.vc/
+.vs/
+Content/StarterContent/
+Intermediate/
+Saved/
+TimeAttack.VC.db
