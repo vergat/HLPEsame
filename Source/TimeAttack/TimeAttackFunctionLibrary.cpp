@@ -95,7 +95,7 @@ UProperty* UTimeAttackFunctionLibrary::RetrieveProperty(UObject* Object, FString
 				Class = nullptr;
 				Struct = StructProp->Struct;
 
-				OutTargetObject = StructProp->ContainerPtrToValuePtr<UObject>(OutTargetObject, ArrayIndex);
+				OutTargetObject = StructProp->ContainerPtrToValuePtr<UStruct>(OutTargetObject);
 			}
 			else
 			{
@@ -104,7 +104,7 @@ UProperty* UTimeAttackFunctionLibrary::RetrieveProperty(UObject* Object, FString
 				{
 					Class = ObjectProp->PropertyClass;
 					Struct = nullptr;
-
+					
 					OutTargetObject = ObjectProp->GetObjectPropertyValue(OutTargetObject);
 				}
 
@@ -113,11 +113,14 @@ UProperty* UTimeAttackFunctionLibrary::RetrieveProperty(UObject* Object, FString
 				{
 					Class = nullptr;
 					Struct = nullptr;
+
 					UObjectProperty* objectProp = Cast<UObjectProperty>(ArrayProp->Inner);
 
 					if (objectProp)
 					{
 						Class = objectProp->PropertyClass;
+						FScriptArrayHelper InnerHelper{ ArrayProp, ArrayProp->ContainerPtrToValuePtr<void>(OutTargetObject) };
+						OutTargetObject = (UObject*)(InnerHelper.GetRawPtr(ArrayIndex));
 					}
 					else 
 					{
@@ -125,10 +128,11 @@ UProperty* UTimeAttackFunctionLibrary::RetrieveProperty(UObject* Object, FString
 						if (strucktProperty) 
 						{
 							Struct = strucktProperty->Struct;
+							FScriptArrayHelper InnerHelper{ ArrayProp, ArrayProp->ContainerPtrToValuePtr<void>(OutTargetObject) };
+							OutTargetObject = (UStruct*)(InnerHelper.GetRawPtr(ArrayIndex));
 						}
 					}
-					FScriptArrayHelper InnerHelper{ ArrayProp, ArrayProp->ContainerPtrToValuePtr<void>(OutTargetObject) };
-					OutTargetObject = *(UObject**)(InnerHelper.GetRawPtr(ArrayIndex));
+
 				}
 				else
 				{

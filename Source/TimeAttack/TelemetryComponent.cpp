@@ -82,13 +82,44 @@ void UTelemetryComponent::DrawTelemetry(UCanvas* Canvas, float& YL, float& YPos)
 			{
 				Value=floatProperty->GetPropertyValue_InContainer(object);
 			}
+			else 
+			{
+				UStructProperty* StructProperty = Cast<UStructProperty>(property);
+				if (StructProperty != nullptr && StructProperty->Struct==TBaseStructure<FVector>::Get()) 
+				{
+					FVector result;
+					StructProperty->CopyCompleteValue(&result, object);
+	
+					Value = result.Size();
+				}
+			}
+			
+			
+			/*if (ObjectProperty) 
+			{
+				UScriptStruct * asd = ObjectProperty->Struct;
+				UProperty*xPrperty= asd->FindPropertyByName("X");
+				UProperty*yPrperty = asd->FindPropertyByName("Y");
+				UProperty*zPrperty = asd->FindPropertyByName("Z");
+				FVector result=FVector::ZeroVector;
+				if (UFloatProperty* xFloat = Cast<UFloatProperty>(xPrperty)) {
+					result.X = xFloat->GetPropertyValue_InContainer(object);
+				}
+				if (UFloatProperty* yFloat = Cast<UFloatProperty>(yPrperty)) {
+					result.Y = yFloat->GetPropertyValue_InContainer(object);
+				}
+				if (UFloatProperty* zFloat = Cast<UFloatProperty>(zPrperty)) {
+					result.Z = zFloat->GetPropertyValue_InContainer(object);
+				}
+				Value = result.Size();
+			}*/
 		}
 		// 1) VehicleSimData.ChassisSimData.Speed
 		
 		// 2) VehicleSimData.WheelSimData[i].Speed
-		// 3) VehicleSimData.WheelSimData[i].SteerAngle
+		// 3) VehicleSimData.WheelSimData[0].SteerAngle
 		// 4) VehicleSimData.WheelSimData[i].RotationAngle
-		// 5) VehicleSimData.WheelSimData[i].SuspensionOffset
+		// 5) VehicleSimData.WheelSimData[0].SuspensionOffset
 
 		// HINT: See UIgnitionGameplayFunctionLibrary::RetrieveProperty.
 		TelemetryValues.Add(Value);
