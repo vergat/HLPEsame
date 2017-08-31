@@ -111,9 +111,22 @@ UProperty* UTimeAttackFunctionLibrary::RetrieveProperty(UObject* Object, FString
 				UArrayProperty* ArrayProp = Cast<UArrayProperty>(Property);
 				if (ArrayProp != nullptr)
 				{
-					Class = Cast<UObjectProperty>(ArrayProp->Inner)->PropertyClass;
+					Class = nullptr;
 					Struct = nullptr;
+					UObjectProperty* objectProp = Cast<UObjectProperty>(ArrayProp->Inner);
 
+					if (objectProp)
+					{
+						Class = objectProp->PropertyClass;
+					}
+					else 
+					{
+						UStructProperty* strucktProperty= Cast<UStructProperty>(ArrayProp->Inner);
+						if (strucktProperty) 
+						{
+							Struct = strucktProperty->Struct;
+						}
+					}
 					FScriptArrayHelper InnerHelper{ ArrayProp, ArrayProp->ContainerPtrToValuePtr<void>(OutTargetObject) };
 					OutTargetObject = *(UObject**)(InnerHelper.GetRawPtr(ArrayIndex));
 				}

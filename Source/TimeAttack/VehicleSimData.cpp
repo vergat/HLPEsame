@@ -29,7 +29,7 @@ void UVehicleSimData::BeginPlay()
 void UVehicleSimData::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	AWheeledVehicle* WheeledVehicle = Cast<AWheeledVehicle>(GetOwner());
 
 	UWheeledVehicleMovementComponent* MovementComp = WheeledVehicle->GetVehicleMovementComponent();
