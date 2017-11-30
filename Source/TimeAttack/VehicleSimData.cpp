@@ -48,8 +48,6 @@ void UVehicleSimData::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 			ChassisSimData.LinearVelocity = LinearyVelocity;
 			ChassisSimData.AngularVelocity = AngularVelocity;
-			UE_LOG(LogTemp, Warning, TEXT("LinearVelocity %f"), ChassisSimData.LinearVelocity.Size());
-			UE_LOG(LogTemp, Warning, TEXT("speed %f\n"), Speed);
 			ChassisSimData.Speed = Speed;
 		}
 

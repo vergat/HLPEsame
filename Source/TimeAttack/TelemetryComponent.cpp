@@ -68,12 +68,14 @@ void UTelemetryComponent::DrawTelemetry(UCanvas* Canvas, float& YL, float& YPos)
 	for (auto& Telemetry : TelemetryArray)
 	{
 		float Value = 0.f;
-
-		// TODO: Get the correct property's value using reflection.
-
+		FString path, unit;
+		if (!Telemetry.Split("_", &path, &unit))
+		{
+			path = Telemetry;
+		}
 		// Support the following queries:
 		UObject* object=nullptr;
-		UProperty* property = UTimeAttackFunctionLibrary::RetrieveProperty(GetOwner(), Telemetry, object);
+		UProperty* property = UTimeAttackFunctionLibrary::RetrieveProperty(GetOwner(), path, object);
 		
 		if (property != nullptr && object != nullptr) 
 		{
@@ -87,41 +89,32 @@ void UTelemetryComponent::DrawTelemetry(UCanvas* Canvas, float& YL, float& YPos)
 				UStructProperty* StructProperty = Cast<UStructProperty>(property);
 				if (StructProperty != nullptr && StructProperty->Struct==TBaseStructure<FVector>::Get()) 
 				{
-					FVector result;
-					StructProperty->CopyCompleteValue(&result, object);
-	
-					Value = result.Size();
-				}
-			}
-			
-			
-			/*if (ObjectProperty) 
-			{
-				UScriptStruct * asd = ObjectProperty->Struct;
-				UProperty*xPrperty= asd->FindPropertyByName("X");
-				UProperty*yPrperty = asd->FindPropertyByName("Y");
-				UProperty*zPrperty = asd->FindPropertyByName("Z");
-				FVector result=FVector::ZeroVector;
-				if (UFloatProperty* xFloat = Cast<UFloatProperty>(xPrperty)) {
-					result.X = xFloat->GetPropertyValue_InContainer(object);
-				}
-				if (UFloatProperty* yFloat = Cast<UFloatProperty>(yPrperty)) {
-					result.Y = yFloat->GetPropertyValue_InContainer(object);
-				}
-				if (UFloatProperty* zFloat = Cast<UFloatProperty>(zPrperty)) {
-					result.Z = zFloat->GetPropertyValue_InContainer(object);
-				}
-				Value = result.Size();
-			}*/
-		}
-		// 1) VehicleSimData.ChassisSimData.Speed
-		
-		// 2) VehicleSimData.WheelSimData[i].Speed
-		// 3) VehicleSimData.WheelSimData[0].SteerAngle
-		// 4) VehicleSimData.WheelSimData[i].RotationAngle
-		// 5) VehicleSimData.WheelSimData[0].SuspensionOffset
+					void* SrcStruct = object;
+					FVector* SrcVectorPtr = StructProperty->ContainerPtrToValuePtr<FVector>(SrcStruct, 0);
 
-		// HINT: See UIgnitionGameplayFunctionLibrary::RetrieveProperty.
+					FVector OutVector;
+					StructProperty->CopyCompleteValue(&OutVector, SrcVectorPtr);
+					Value = OutVector.Size();
+				}
+			}	
+
+			if (unit.Equals("m/s"))
+			{
+				Value = Value*0.01;
+			}
+			else if (unit.Equals("km/h"))
+			{
+				Value = Value*0.036;
+			}
+			else if (unit.Equals("m"))
+			{
+				Value = Value*0.01;
+			}
+			else if (unit.Equals("rad"))
+			{
+				Value = FMath::DegreesToRadians(Value);
+			}
+		}
 		TelemetryValues.Add(Value);
 	}
 
