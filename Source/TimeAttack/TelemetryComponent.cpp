@@ -98,17 +98,17 @@ void UTelemetryComponent::DrawTelemetry(UCanvas* Canvas, float& YL, float& YPos)
 				}
 			}	
 
-			if (unit.Equals("m/s"))
+			if (unit.Equals("cm/s"))
 			{
-				Value = Value*0.01;
+				Value = Value*100.0f;
 			}
 			else if (unit.Equals("km/h"))
 			{
-				Value = Value*0.036;
+				Value = Value*3.6f;
 			}
-			else if (unit.Equals("m"))
+			else if (unit.Equals("cm"))
 			{
-				Value = Value*0.01;
+				Value = Value*100.0f;
 			}
 			else if (unit.Equals("rad"))
 			{
